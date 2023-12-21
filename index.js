@@ -8,7 +8,7 @@ class Player {
   }
   draw(ctx) {
     //Body
-    ctx.fillRect(this.x, this.y, this.h, this.w);
+    ctx.fillRect(this.x, this.y, this.w, this.h);
   }
   move(keys) {
     switch (true) {
@@ -19,12 +19,34 @@ class Player {
         }
         break;
       case keys["s"]:
-        if (this.y < canvas.height - this.h * 5) {
+        if (this.y < canvas.height - this.h) {
           this.y += this.speed;
           console.log("new y position", this.y);
         }
         break;
     }
+  }
+}
+class Enemy {
+  constructor(x, y, h, w, speed) {
+    this.x = x;
+    this.y = y;
+    this.h = h;
+    this.w = w;
+    this.speed = speed;
+  }
+  draw(ctx) {
+    //Body
+    ctx.fillRect(this.x, this.y, this.w, this.h);
+  }
+  move(ballYPosition) {
+    let center = (this.y + this.h/2);
+    if(center < ballYPosition){
+      this.y+=this.speed;
+    } else if (center > ballYPosition){
+      this.y-=this.speed;
+    }
+    this.y = Math.round(this.y);
   }
 }
 
@@ -33,18 +55,9 @@ class Ball {
     this.centerX = x;
     this.centerY = y;
     this.radius = radius;
-    this.leftwardsMovement = 0;
+    this.leftwardsMovement = 10;
     this.upwardsMovement = 0;
   }
-  getBoundingBox() {
-    return {
-      px: this.centerX - this.radius,
-      py: this.centerY + this.radius,
-      px2: this.centerX + this.radius,
-      py2: this.centerY - this.radius,
-    };
-  }
-
   draw(ctx) {
     ctx.beginPath();
     ctx.arc(this.centerX, this.centerY, this.radius, 0, 2 * Math.PI);
@@ -52,34 +65,43 @@ class Ball {
     ctx.closePath();
   }
   detectCollisionRect(rect) {
-    let boundingBox = this.getBoundingBox();
-    console.log(boundingBox);
-    let rx1 = rect.x;
-    let ry1 = rect.y;
-    let rx2 = rect.x + rect.width;
-    let ry2 = rect.y - rect.height;
     return (
-      rx1 < boundingBox.px2 &&
-      rx2 > boundingBox.px &&
-      ry1 > boundingBox.py2 &&
-      ry2 < boundingBox.py
+      rect.x <= this.centerX &&
+      rect.x + rect.w >= this.centerX &&
+      rect.y < this.centerY &&
+      rect.y + rect.h > this.centerY
     );
   }
-  detectCollisionScreen(canvas) {
+  detectCollisionScreen(canvas, scorePlayer, scoreEnemy) {
     if (this.centerX < 0) {
-      this.centerX = canvas.width / 2;
+      this.resetCoordinates(canvas);
+      scoreEnemy.value++;
     } else if (this.centerX > canvas.width) {
-      this.centerX = canvas.width / 2;
+      this.resetCoordinates(canvas);
+      scorePlayer.value++;
+    }
+    if (this.centerY < 0 || this.centerY > canvas.height) {
+      this.upwardsMovement = -this.upwardsMovement;
     }
   }
-  move(player, canvas, enemy) {
-    if (this.detectCollisionRect(player)) {
+  resetCoordinates(canvas) {
+    this.centerX = canvas.width / 2;
+    this.centerY = canvas.height / 2;
+    this.leftwardsMovement = -this.leftwardsMovement;
+    this.upwardsMovement = 0;
+  }
+
+  move(player, canvas, enemy, scorePlayer, scoreEnemy) {
+    if (this.detectCollisionRect(player) || this.detectCollisionRect(enemy)) {
       this.leftwardsMovement = -this.leftwardsMovement;
-      this.upwardsMovement = Math.random() + 1;
+      this.upwardsMovement = Math.random() * 20 - 10;
+      console.log("collision");
     }
-    this.detectCollisionScreen(canvas);
+
+    this.detectCollisionScreen(canvas,scorePlayer, scoreEnemy);
 
     this.centerX -= this.leftwardsMovement;
+    this.centerY -= this.upwardsMovement;
   }
 }
 
@@ -94,8 +116,8 @@ class Text {
   draw(ctx) {
     ctx.font = this.font;
     ctx.save();
-    ctx.shadowColor = "rgba(0, 0, 0, 0.7)"; // Shadow color (black with 50% opacity)
-    ctx.shadowBlur = 3; // Shadow blur radius
+    ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
+    ctx.shadowBlur = 3;
     ctx.fillStyle = this.color;
     ctx.fillText(this.str, this.x, this.y);
     ctx.restore();
@@ -135,7 +157,8 @@ ctx.shadowBlur = 5; // Shadow blur radius
 
 console.log(canvas.width);
 console.log(canvas.width / 2);
-let player = new Player(canvas.width / 8, canvas.height / 3, 50, 250, 10);
+let player = new Player(canvas.width / 8, canvas.height / 3, 250, 50, 10);
+let enemy = new Enemy(canvas.width / 8 * 7, canvas.height / 3, 250, 50, 5);
 let title = new Text(
   canvas.width / 2.3,
   canvas.height / 10,
@@ -143,24 +166,34 @@ let title = new Text(
   "white",
   "PONG"
 );
-let score = new InterfaceElement(
-  10,
-  50,
-  "50px Signika Negative",
+let scorePlayer = new InterfaceElement(
+  canvas.width/3,
+  75,
+  "72px Signika Negative",
   "black",
-  "Score: ",
+  "",
+  0
+);
+let scoreEnemy = new InterfaceElement(
+  canvas.width/3 * 2,
+  75,
+  "72px Signika Negative",
+  "black",
+  "",
   0
 );
 let ball = new Ball(canvas.width / 2, canvas.height / 2, 20);
-console.log(ball.centerX, ball.centerY);
 function update() {
   player.move(keys);
-  ball.move(player, canvas, 0);
+  enemy.move(ball.centerY);
+  ball.move(player, canvas, enemy, scorePlayer, scoreEnemy);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   player.draw(ctx);
+  enemy.draw(ctx);
   ball.draw(ctx);
   title.draw(ctx);
-  score.draw(ctx);
+  scorePlayer.draw(ctx);
+  scoreEnemy.draw(ctx);
   window.requestAnimationFrame(update);
 }
 
