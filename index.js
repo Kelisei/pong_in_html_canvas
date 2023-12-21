@@ -14,13 +14,11 @@ class Player {
       case keys["w"]:
         if (this.y > 0) {
           this.y -= this.speed;
-          console.log("new y position", this.x);
         }
         break;
       case keys["s"]:
         if (this.y < canvas.height - this.h) {
           this.y += this.speed;
-          console.log("new y position", this.y);
         }
         break;
     }
@@ -93,12 +91,10 @@ class Ball {
     if (this.detectCollisionRect(player) || this.detectCollisionRect(enemy)) {
       this.leftwardsMovement = -10;
       this.upwardsMovement = Math.random() * 20 - 10;
-      console.log("collision");
     } 
     if (this.detectCollisionRect(enemy)){
       this.leftwardsMovement = 10;
       this.upwardsMovement = Math.random() * 20 - 10;
-      console.log("collision");
     }
 
     this.detectCollisionScreen(canvas,scorePlayer, scoreEnemy);
@@ -139,6 +135,7 @@ class InterfaceElement {
   }
 }
 
+
 let keys = {};
 function onKeyDown(event) {
   keys[event.key] = true;
@@ -154,6 +151,8 @@ let ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth * 0.98;
 canvas.height = window.innerHeight * 0.97;
+
+
 ctx.shadowColor = "rgba(0, 0, 0, 0.5)"; 
 ctx.shadowBlur = 5;
 
