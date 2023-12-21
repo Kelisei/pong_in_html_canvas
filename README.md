@@ -1,3 +1,3 @@
 # Pong made in javascript using the Canvas API
 
-## TODO: collisions
+## TODO: delagate responsability from move in Ball class
