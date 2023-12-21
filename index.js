@@ -109,12 +109,12 @@ class Ball {
 }
 
 class Text {
-  constructor(x, y, font, color, str) {
-    this.x = x;
-    this.y = y;
+  constructor(x, y, font, color, str, centered) {
     this.font = font;
     this.color = color;
     this.str = str;
+    this.x = x;
+    this.y = y;
   }
   draw(ctx) {
     ctx.font = this.font;
@@ -122,14 +122,14 @@ class Text {
     ctx.shadowColor = "rgba(0, 0, 0, 0.7)";
     ctx.shadowBlur = 3;
     ctx.fillStyle = this.color;
-    ctx.fillText(this.str, this.x, this.y);
+    ctx.fillText(this.str, this.x - ctx.measureText(this.str).width/2, this.y);
     ctx.restore();
   }
 }
 
 class InterfaceElement {
-  constructor(x, y, font, color, str, value) {
-    this.text = new Text(x, y, font, color, "");
+  constructor(x, y, font, color, str, value, ctx) {
+    this.text = new Text(x, y, font, color, "", ctx);
     this.name = str;
     this.value = value;
   }
@@ -160,7 +160,7 @@ ctx.shadowBlur = 5;
 let player = new Player(canvas.width / 8, canvas.height / 3, 250, 50, 10);
 let enemy = new Enemy(canvas.width / 8 * 7, canvas.height / 3, 250, 50, 4);
 let title = new Text(
-  canvas.width / 2.3,
+  canvas.width / 2,
   canvas.height / 10,
   "100px Signika Negative",
   "white",
