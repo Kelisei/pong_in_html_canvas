@@ -91,7 +91,12 @@ class Ball {
 
   move(player, canvas, enemy, scorePlayer, scoreEnemy) {
     if (this.detectCollisionRect(player) || this.detectCollisionRect(enemy)) {
-      this.leftwardsMovement = -this.leftwardsMovement;
+      this.leftwardsMovement = -10;
+      this.upwardsMovement = Math.random() * 20 - 10;
+      console.log("collision");
+    } 
+    if (this.detectCollisionRect(enemy)){
+      this.leftwardsMovement = 10;
       this.upwardsMovement = Math.random() * 20 - 10;
       console.log("collision");
     }
@@ -152,10 +157,8 @@ canvas.height = window.innerHeight * 0.97;
 ctx.shadowColor = "rgba(0, 0, 0, 0.5)"; 
 ctx.shadowBlur = 5;
 
-console.log(canvas.width);
-console.log(canvas.width / 2);
 let player = new Player(canvas.width / 8, canvas.height / 3, 250, 50, 10);
-let enemy = new Enemy(canvas.width / 8 * 7, canvas.height / 3, 250, 50, 10);
+let enemy = new Enemy(canvas.width / 8 * 7, canvas.height / 3, 250, 50, 6);
 let title = new Text(
   canvas.width / 2.3,
   canvas.height / 10,
