@@ -7,7 +7,6 @@ class Player {
     this.speed = speed;
   }
   draw(ctx) {
-    //Body
     ctx.fillRect(this.x, this.y, this.w, this.h);
   }
   move(keys) {
@@ -36,7 +35,6 @@ class Enemy {
     this.speed = speed;
   }
   draw(ctx) {
-    //Body
     ctx.fillRect(this.x, this.y, this.w, this.h);
   }
   move(ballYPosition) {
@@ -136,7 +134,6 @@ class InterfaceElement {
   }
 }
 
-//Event listener setup
 let keys = {};
 function onKeyDown(event) {
   keys[event.key] = true;
@@ -152,13 +149,13 @@ let ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth * 0.98;
 canvas.height = window.innerHeight * 0.97;
-ctx.shadowColor = "rgba(0, 0, 0, 0.5)"; // Shadow color (black with 50% opacity)
-ctx.shadowBlur = 5; // Shadow blur radius
+ctx.shadowColor = "rgba(0, 0, 0, 0.5)"; 
+ctx.shadowBlur = 5;
 
 console.log(canvas.width);
 console.log(canvas.width / 2);
 let player = new Player(canvas.width / 8, canvas.height / 3, 250, 50, 10);
-let enemy = new Enemy(canvas.width / 8 * 7, canvas.height / 3, 250, 50, 5);
+let enemy = new Enemy(canvas.width / 8 * 7, canvas.height / 3, 250, 50, 10);
 let title = new Text(
   canvas.width / 2.3,
   canvas.height / 10,
