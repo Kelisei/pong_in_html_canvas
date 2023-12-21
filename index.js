@@ -158,7 +158,7 @@ ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
 ctx.shadowBlur = 5;
 
 let player = new Player(canvas.width / 8, canvas.height / 3, 250, 50, 10);
-let enemy = new Enemy(canvas.width / 8 * 7, canvas.height / 3, 250, 50, 6);
+let enemy = new Enemy(canvas.width / 8 * 7, canvas.height / 3, 250, 50, 4);
 let title = new Text(
   canvas.width / 2.3,
   canvas.height / 10,
